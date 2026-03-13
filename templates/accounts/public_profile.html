@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}{{ viewed_user.username }} – Badminton Club{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h4 class="card-title"><i class="bi bi-person-circle"></i> {{ viewed_user.get_full_name|default:viewed_user.username }}</h4>
+                <p class="text-muted">@{{ viewed_user.username }}</p>
+                <div class="row text-center mb-3">
+                    <div class="col-6">
+                        <div class="fs-3 fw-bold text-primary">{{ player.elo_rating }}</div>
+                        <div class="text-muted small">ELO-Punkte</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="fs-3 fw-bold text-warning">
+                            {% if player.rank_position %}#{{ player.rank_position }}{% else %}–{% endif %}
+                        </div>
+                        <div class="text-muted small">Rang</div>
+                    </div>
+                </div>
+                {% if user.is_authenticated and viewed_user != user %}
+                    {% if user.profile.rank_position and player.rank_position < user.profile.rank_position %}
+                        {% if not player.has_active_challenge and not user.profile.has_active_challenge %}
+                        <a href="{% url 'challenges:create' viewed_user.username %}" class="btn btn-primary w-100">
+                            <i class="bi bi-lightning-charge-fill"></i> Herausfordern
+                        </a>
+                        {% else %}
+                        <button class="btn btn-secondary w-100" disabled>Spieler ist gerade beschäftigt</button>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

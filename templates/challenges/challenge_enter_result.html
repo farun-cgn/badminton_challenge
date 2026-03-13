@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Ergebnis eintragen – Badminton Club{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h4 class="card-title"><i class="bi bi-clipboard-check-fill text-success"></i> Ergebnis eintragen</h4>
+                <p class="text-muted">Herausforderung: {{ challenge.challenger.username }} vs {{ challenge.challenged.username }}</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Wer hat gewonnen?</label>
+                        {% for value, label in form.fields.winner.choices %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="winner" id="winner_{{ value }}" value="{{ value }}"
+                                   {% if form.winner.value == value|stringformat:"s" %}checked{% endif %} required>
+                            <label class="form-check-label fs-5" for="winner_{{ value }}">{{ label }}</label>
+                        </div>
+                        {% endfor %}
+                        {% if form.winner.errors %}
+                        <div class="text-danger small">{{ form.winner.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-4">
+                        <label for="id_score" class="form-label fw-semibold">Spielergebnis <small class="text-muted">(optional)</small></label>
+                        <input type="text" name="score" id="id_score" class="form-control"
+                               placeholder="z.B. 21-15, 21-18" value="{{ form.score.value|default:'' }}">
+                        <small class="text-muted">{{ form.fields.score.help_text }}</small>
+                    </div>
+                    <div class="alert alert-info small">
+                        <i class="bi bi-info-circle"></i> Das Ergebnis kann nicht rückgängig gemacht werden. Bitte stelle sicher, dass es korrekt ist.
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">Ergebnis speichern</button>
+                </form>
+                <div class="mt-2">
+                    <a href="{% url 'challenges:detail' challenge.pk %}" class="btn btn-link">Abbrechen</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

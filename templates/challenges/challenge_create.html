@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Herausforderung – Badminton Club{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h4 class="card-title"><i class="bi bi-lightning-charge-fill text-warning"></i> Herausforderung senden</h4>
+                <p class="text-muted">Du möchtest <strong>{{ challenged_user.get_full_name|default:challenged_user.username }}</strong> (@{{ challenged_user.username }}) herausfordern.</p>
+                <table class="table table-sm mb-4">
+                    <tr>
+                        <th>Aktueller Rang</th>
+                        <td>#{{ challenged_profile.rank_position }}</td>
+                    </tr>
+                    <tr>
+                        <th>ELO-Punkte</th>
+                        <td>{{ challenged_profile.elo_rating }}</td>
+                    </tr>
+                </table>
+                <p class="text-info small"><i class="bi bi-info-circle"></i> Beide Spieler sind bis zur Entscheidung dieser Herausforderung gesperrt.</p>
+                <form method="post" class="d-flex gap-2">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-warning flex-grow-1">
+                        <i class="bi bi-lightning-charge-fill"></i> Herausforderung senden
+                    </button>
+                    <a href="{% url 'rankings:leaderboard' %}" class="btn btn-outline-secondary">Abbrechen</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

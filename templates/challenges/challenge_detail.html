@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Herausforderung #{{ challenge.pk }} – Badminton Club{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-people-fill"></i> Herausforderung #{{ challenge.pk }}</h5>
+                <span class="badge bg-{% if challenge.status == 'pending' %}warning text-dark{% elif challenge.status == 'accepted' %}primary{% elif challenge.status == 'completed' %}success{% elif challenge.status == 'declined' %}secondary{% else %}danger{% endif %}">
+                    {{ challenge.get_status_display }}
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="row text-center mb-3">
+                    <div class="col-5">
+                        <strong>{{ challenge.challenger.get_full_name|default:challenge.challenger.username }}</strong>
+                        <div class="text-muted small">@{{ challenge.challenger.username }}</div>
+                        <div class="text-muted small">ELO: {{ challenge.challenger_elo_before }}{% if challenge.challenger_elo_after %} → <strong>{{ challenge.challenger_elo_after }}</strong>{% endif %}</div>
+                    </div>
+                    <div class="col-2 d-flex align-items-center justify-content-center">
+                        <span class="fs-4 fw-bold text-muted">vs</span>
+                    </div>
+                    <div class="col-5">
+                        <strong>{{ challenge.challenged.get_full_name|default:challenge.challenged.username }}</strong>
+                        <div class="text-muted small">@{{ challenge.challenged.username }}</div>
+                        <div class="text-muted small">ELO: {{ challenge.challenged_elo_before }}{% if challenge.challenged_elo_after %} → <strong>{{ challenge.challenged_elo_after }}</strong>{% endif %}</div>
+                    </div>
+                </div>
+
+                {% if challenge.status == 'completed' and challenge.result %}
+                <div class="alert alert-success text-center">
+                    <i class="bi bi-trophy-fill text-warning"></i>
+                    <strong>Sieger: {{ challenge.result.winner.username }}</strong>
+                    {% if challenge.result.score %} – {{ challenge.result.score }}{% endif %}
+                </div>
+                {% endif %}
+
+                <table class="table table-sm text-muted mb-0">
+                    <tr><th>Erstellt</th><td>{{ challenge.created_at|date:"d.m.Y H:i" }}</td></tr>
+                    {% if challenge.responded_at %}<tr><th>Antwort</th><td>{{ challenge.responded_at|date:"d.m.Y H:i" }}</td></tr>{% endif %}
+                    {% if challenge.completed_at %}<tr><th>Abgeschlossen</th><td>{{ challenge.completed_at|date:"d.m.Y H:i" }}</td></tr>{% endif %}
+                </table>
+            </div>
+
+            {% if user.is_authenticated %}
+            <div class="card-footer d-flex gap-2">
+                {% if challenge.status == 'pending' and user == challenge.challenged %}
+                <a href="{% url 'challenges:respond' challenge.pk %}" class="btn btn-primary">Annehmen / Ablehnen</a>
+                {% endif %}
+                {% if challenge.status == 'accepted' %}
+                {% if user == challenge.challenger or user == challenge.challenged %}
+                <a href="{% url 'challenges:enter_result' challenge.pk %}" class="btn btn-success">Ergebnis eintragen</a>
+                {% endif %}
+                {% endif %}
+                <a href="{% url 'challenges:my_challenges' %}" class="btn btn-outline-secondary ms-auto">Alle meine Herausforderungen</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

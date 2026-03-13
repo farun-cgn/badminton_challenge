@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Mein Profil – Badminton Club{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h4 class="card-title"><i class="bi bi-person-circle"></i> {{ user.get_full_name|default:user.username }}</h4>
+                <p class="text-muted mb-1">@{{ user.username }}</p>
+                <p class="text-muted mb-3"><i class="bi bi-envelope"></i> {{ user.email }}</p>
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="fs-3 fw-bold text-primary">{{ player.elo_rating }}</div>
+                        <div class="text-muted small">ELO-Punkte</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="fs-3 fw-bold text-warning">
+                            {% if player.rank_position %}#{{ player.rank_position }}{% else %}–{% endif %}
+                        </div>
+                        <div class="text-muted small">Rang</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Meine letzten Spiele</h5>
+                {% with matches=user.matches_won.all|slice:":5" %}
+                {% if matches %}
+                <ul class="list-group list-group-flush">
+                    {% for m in matches %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span><i class="bi bi-trophy text-warning"></i> Sieg vs {{ m.loser.username }}</span>
+                        <span class="elo-up">+{{ m.elo_change }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted">Noch keine Spiele.</p>
+                {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

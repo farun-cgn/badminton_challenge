@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}Meine Herausforderungen – Badminton Club{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-people-fill"></i> Meine Herausforderungen</h2>
+
+<h5>Aktive Herausforderungen</h5>
+{% if active_challenges %}
+<div class="table-responsive bg-white shadow-sm rounded mb-4">
+    <table class="table table-hover align-middle mb-0">
+        <thead class="table-dark">
+            <tr>
+                <th>Gegner</th>
+                <th class="text-center">Rolle</th>
+                <th class="text-center">Status</th>
+                <th>Erstellt</th>
+                <th class="text-center">Aktion</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for c in active_challenges %}
+        <tr>
+            <td>
+                {% if c.challenger == user %}
+                    <a href="{% url 'accounts:public_profile' c.challenged.username %}">{{ c.challenged.username }}</a>
+                {% else %}
+                    <a href="{% url 'accounts:public_profile' c.challenger.username %}">{{ c.challenger.username }}</a>
+                {% endif %}
+            </td>
+            <td class="text-center">
+                {% if c.challenger == user %}
+                <span class="badge bg-info text-dark">Herausforderer</span>
+                {% else %}
+                <span class="badge bg-warning text-dark">Herausgeforderter</span>
+                {% endif %}
+            </td>
+            <td class="text-center">
+                <span class="badge bg-{% if c.status == 'pending' %}warning text-dark{% else %}primary{% endif %}">
+                    {{ c.get_status_display }}
+                </span>
+            </td>
+            <td><small>{{ c.created_at|date:"d.m.Y" }}</small></td>
+            <td class="text-center">
+                <a href="{% url 'challenges:detail' c.pk %}" class="btn btn-sm btn-outline-primary">Details</a>
+                {% if c.status == 'pending' and c.challenged == user %}
+                <a href="{% url 'challenges:respond' c.pk %}" class="btn btn-sm btn-warning">Antworten</a>
+                {% endif %}
+                {% if c.status == 'accepted' %}
+                <a href="{% url 'challenges:enter_result' c.pk %}" class="btn btn-sm btn-success">Ergebnis</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="alert alert-info mb-4">Keine aktiven Herausforderungen.</div>
+{% endif %}
+
+<h5>Verlauf (letzte 20)</h5>
+{% if history_challenges %}
+<div class="table-responsive bg-white shadow-sm rounded">
+    <table class="table table-sm table-hover align-middle mb-0">
+        <thead class="table-secondary">
+            <tr>
+                <th>Gegner</th>
+                <th class="text-center">Ergebnis</th>
+                <th class="text-center">Status</th>
+                <th>Datum</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for c in history_challenges %}
+        <tr>
+            <td>
+                {% if c.challenger == user %}
+                    {{ c.challenged.username }}
+                {% else %}
+                    {{ c.challenger.username }}
+                {% endif %}
+            </td>
+            <td class="text-center">
+                {% if c.status == 'completed' and c.result %}
+                    {% if c.result.winner == user %}
+                    <span class="elo-up"><i class="bi bi-trophy-fill"></i> Sieg</span>
+                    {% else %}
+                    <span class="elo-down"><i class="bi bi-x-circle-fill"></i> Niederlage</span>
+                    {% endif %}
+                {% else %}–{% endif %}
+            </td>
+            <td class="text-center">
+                <span class="badge bg-{% if c.status == 'completed' %}success{% elif c.status == 'declined' %}secondary{% else %}danger{% endif %}">
+                    {{ c.get_status_display }}
+                </span>
+            </td>
+            <td><small>{{ c.created_at|date:"d.m.Y" }}</small></td>
+            <td><a href="{% url 'challenges:detail' c.pk %}" class="btn btn-sm btn-outline-secondary">Details</a></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="alert alert-info">Noch keine abgeschlossenen Herausforderungen.</div>
+{% endif %}
+{% endblock %}
