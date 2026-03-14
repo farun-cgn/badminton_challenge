@@ -17,14 +17,18 @@ def calculate_elo_change(winner_rating: int, loser_rating: int, k: int = K_FACTO
 
 def recompute_rank_positions() -> None:
     from accounts.models import PlayerProfile
-    # Clear positions first to avoid unique constraint violations during bulk update
+    # Clear all positions first
     PlayerProfile.objects.filter(is_active_member=True).update(rank_position=None)
-    profiles = list(
-        PlayerProfile.objects.filter(is_active_member=True).order_by('-elo_rating').select_for_update()
-    )
-    for position, profile in enumerate(profiles, start=1):
-        profile.rank_position = position
-    PlayerProfile.objects.bulk_update(profiles, ['rank_position'])
+    # Rank men and women separately so each gender has its own rank 1, 2, 3, ...
+    for gender in ('M', 'F'):
+        profiles = list(
+            PlayerProfile.objects.filter(is_active_member=True, gender=gender)
+            .order_by('-elo_rating')
+            .select_for_update()
+        )
+        for position, profile in enumerate(profiles, start=1):
+            profile.rank_position = position
+        PlayerProfile.objects.bulk_update(profiles, ['rank_position'])
 
 
 @transaction.atomic

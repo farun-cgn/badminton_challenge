@@ -30,6 +30,10 @@ def create_challenge(request, username):
         messages.error(request, 'Einer der Spieler hat noch keinen Ranglistenplatz.')
         return redirect('rankings:leaderboard')
 
+    if challenger_profile.gender != challenged_profile.gender:
+        messages.error(request, 'Herausforderungen sind nur innerhalb derselben Kategorie (Herren/Damen) möglich.')
+        return redirect('rankings:leaderboard')
+
     if challenged_profile.rank_position >= challenger_profile.rank_position:
         messages.error(request, 'Du kannst nur Spieler herausfordern, die in der Rangliste höher stehen.')
         return redirect('rankings:leaderboard')

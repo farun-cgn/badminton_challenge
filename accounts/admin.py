@@ -12,7 +12,7 @@ class PlayerProfileInline(admin.StackedInline):
     can_delete = False
     verbose_name = 'Spielerprofil'
     verbose_name_plural = 'Spielerprofil'
-    fields = ('elo_rating', 'rank_position', 'is_active_member')
+    fields = ('gender', 'elo_rating', 'rank_position', 'is_active_member')
 
 
 class CustomUserAdmin(UserAdmin):

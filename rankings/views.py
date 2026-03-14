@@ -5,8 +5,13 @@ from challenges.models import EloHistory
 
 
 def leaderboard(request):
-    players = PlayerProfile.objects.filter(is_active_member=True).select_related('user').order_by('rank_position')
-    return render(request, 'rankings/leaderboard.html', {'players': players})
+    base_qs = PlayerProfile.objects.filter(is_active_member=True).select_related('user').order_by('rank_position')
+    men_players = base_qs.filter(gender='M')
+    women_players = base_qs.filter(gender='F')
+    return render(request, 'rankings/leaderboard.html', {
+        'men_players': men_players,
+        'women_players': women_players,
+    })
 
 
 def elo_history(request):

@@ -3,9 +3,15 @@ from django.contrib.auth.models import User
 
 
 class PlayerProfile(models.Model):
+    GENDER_CHOICES = [
+        ('M', 'Männlich'),
+        ('F', 'Weiblich'),
+    ]
+
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='M', verbose_name='Geschlecht')
     elo_rating = models.IntegerField(default=1200)
-    rank_position = models.PositiveIntegerField(unique=True, null=True, blank=True)
+    rank_position = models.PositiveIntegerField(null=True, blank=True)
     is_active_member = models.BooleanField(default=True)
     joined_at = models.DateTimeField(auto_now_add=True)
 
