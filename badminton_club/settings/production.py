@@ -5,6 +5,13 @@ env = environ.Env()
 
 DEBUG = False
 
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
+
+CSRF_TRUSTED_ORIGINS = [
+        "https://badundminton.de",
+        "https://www.badundminton.de",
+]
+
 SECURE_SSL_REDIRECT = True
 SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
