@@ -20,6 +20,20 @@ class CustomUserAdmin(UserAdmin):
     list_display = ('username', 'email', 'first_name', 'last_name', 'get_elo', 'get_rank', 'is_staff')
     actions = ['send_password_reset', 'set_elo_1200']
 
+    def save_formset(self, request, form, formset, change):
+        if not change and formset.model == PlayerProfile:
+            # The post_save signal already created a PlayerProfile for the new user.
+            # Update it with the inline form data instead of inserting a duplicate.
+            instances = formset.save(commit=False)
+            for obj in instances:
+                PlayerProfile.objects.filter(user=form.instance).update(
+                    gender=obj.gender,
+                    elo_rating=obj.elo_rating,
+                    is_active_member=obj.is_active_member,
+                )
+        else:
+            super().save_formset(request, form, formset, change)
+
     def get_elo(self, obj):
         try:
             return obj.profile.elo_rating

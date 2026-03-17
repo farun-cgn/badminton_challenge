@@ -11,9 +11,9 @@
         <thead class="table-dark">
             <tr>
                 <th>Gegner</th>
-                <th class="text-center">Rolle</th>
+                <th class="text-center d-none d-sm-table-cell">Rolle</th>
                 <th class="text-center">Status</th>
-                <th>Erstellt</th>
+                <th class="d-none d-md-table-cell">Erstellt</th>
                 <th class="text-center">Aktion</th>
             </tr>
         </thead>
@@ -27,7 +27,7 @@
                     <a href="{% url 'accounts:public_profile' c.challenger.username %}">{{ c.challenger.username }}</a>
                 {% endif %}
             </td>
-            <td class="text-center">
+            <td class="text-center d-none d-sm-table-cell">
                 {% if c.challenger == user %}
                 <span class="badge bg-info text-dark">Herausforderer</span>
                 {% else %}
@@ -39,8 +39,9 @@
                     {{ c.get_status_display }}
                 </span>
             </td>
-            <td><small>{{ c.created_at|date:"d.m.Y" }}</small></td>
+            <td class="d-none d-md-table-cell"><small>{{ c.created_at|date:"d.m.Y" }}</small></td>
             <td class="text-center">
+                <div class="d-flex flex-wrap gap-1 justify-content-center">
                 <a href="{% url 'challenges:detail' c.pk %}" class="btn btn-sm btn-outline-primary">Details</a>
                 {% if c.status == 'pending' and c.challenged == user %}
                 <a href="{% url 'challenges:respond' c.pk %}" class="btn btn-sm btn-warning">Antworten</a>
@@ -48,6 +49,7 @@
                 {% if c.status == 'accepted' %}
                 <a href="{% url 'challenges:enter_result' c.pk %}" class="btn btn-sm btn-success">Ergebnis</a>
                 {% endif %}
+                </div>
             </td>
         </tr>
         {% endfor %}
@@ -66,8 +68,8 @@
             <tr>
                 <th>Gegner</th>
                 <th class="text-center">Ergebnis</th>
-                <th class="text-center">Status</th>
-                <th>Datum</th>
+                <th class="text-center d-none d-sm-table-cell">Status</th>
+                <th class="d-none d-md-table-cell">Datum</th>
                 <th></th>
             </tr>
         </thead>
@@ -90,12 +92,12 @@
                     {% endif %}
                 {% else %}–{% endif %}
             </td>
-            <td class="text-center">
+            <td class="text-center d-none d-sm-table-cell">
                 <span class="badge bg-{% if c.status == 'completed' %}success{% elif c.status == 'declined' %}secondary{% else %}danger{% endif %}">
                     {{ c.get_status_display }}
                 </span>
             </td>
-            <td><small>{{ c.created_at|date:"d.m.Y" }}</small></td>
+            <td class="d-none d-md-table-cell"><small>{{ c.created_at|date:"d.m.Y" }}</small></td>
             <td><a href="{% url 'challenges:detail' c.pk %}" class="btn btn-sm btn-outline-secondary">Details</a></td>
         </tr>
         {% endfor %}
